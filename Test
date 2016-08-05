@@ -1,0 +1,47 @@
+Function CrossCheck_Single(ByVal text1 As String, ByVal text2 As String) As Single
+    Dim checkCount As Integer, partlen As Integer, sTemp As String, part(0 To 20) As String, i As Integer, j As Integer
+    If text1 = "" Or text2 = "" Then
+        CrossCheck_Single = 0
+        Exit Function
+    End If
+    
+    'Select the short text and divide it into ten parts
+    If Len(text1) <= Len(text2) Then
+        partlen = Len(text1) \ 10
+    Else
+    partlen = Len(text2) \ 10
+    sTemp = text1: text1 = text2: text2 = sTemp
+    End If
+    If partlen = 0 Then partlen = 1
+    
+    i = 0: j = 1
+    
+    Do While j <= Len(text1)
+        If j + partlen - 1 <= Len(text1) Then
+            part(i) = Mid(text1, j, partlen)
+        Else
+            part(i) = Mid(text1, j)
+        End If
+        i = i + 1
+        j = j + partlen
+    Loop
+    
+    'Check if each part can be found in the long text
+    i = 0
+    checkCount = 0
+    Do Until part(i) = ""
+        If InStr(text2, part(i)) > 0 Then checkCount = checkCount + 1
+        i = i + 1
+    Loop
+    CrossCheck_Single = checkCount / i
+End Function
+
+Function CrossCheck_Area(ByVal text As String, ByVal area As Range, ByVal key As Single) As Integer
+    Dim i As Integer, j As Integer
+    CrossCheck_Area = 0
+    For i = 1 To area.Rows.Count
+        For j = 1 To area.Columns.Count
+            If CrossCheck_Single(text, area.Cells(i, j)) > key Then CrossCheck_Area = CrossCheck_Area + 1
+        Next j
+    Next i
+End Function
